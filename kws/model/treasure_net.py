@@ -8,7 +8,7 @@ class TreasureNet(nn.Module):
                  conv_channels=16, kernel_size=(20, 5), stride=(8, 2),
                  gru_hidden=256, gru_layers=2, num_heads=8, dropout=0.2):
         super(TreasureNet, self).__init__()
-        self.encoder = CRNN(n_mels, conv_channels, kernel_size, stride,
+        self.encoder = CRNN(time_steps, n_mels, conv_channels, kernel_size, stride,
                             gru_hidden, gru_layers, dropout)
 
         self.layer_norm = nn.LayerNorm(gru_hidden)

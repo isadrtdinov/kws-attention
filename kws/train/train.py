@@ -3,65 +3,59 @@ import torch
 import torchaudio
 import torchvision
 from torch import nn
+from ..utils.data import calculate_weights
 from ..utils.transforms import SpectogramNormalize
+from ..metrics.fnr_fpr import fnr_fpr_auc, fr_at_fa
 
 
-def process_batch(model, optimizer, criterion, alphabet, batch, train=True):
-    inputs, targets, output_lengths, target_lengths = batch 
+def process_batch(model, optimizer, criterion, inputs, targets, params, train=True):
     optimizer.zero_grad()
 
     with torch.set_grad_enabled(train):
-        outputs = model(inputs)
-        permuted_outputs = outputs.permute((2, 0, 1)).log_softmax(dim=2)
-        loss = criterion(permuted_outputs, targets, output_lengths, target_lengths)
+        logits = model(inputs)
+        loss = criterion(loss, targets)
 
         if train:
             loss.backward()
             optimizer.step()
 
-    predict_strings, target_strings = [], []
-    for output, output_length in zip(outputs, output_lengths):
-        predict_strings.append(alphabet.best_path_search(output[:, :output_length]))
+    probs = 1.0 - nn.functional.softmax(logits, dim=-1).numpy()
+    targets = (targets != 0).long().numpy()
 
-    for target, target_length in zip(targets, target_lengths):
-        target_strings.append(alphabet.indices_to_string(target[:target_length]))
+    auc = fnr_fpr_auc(probs, targets)
+    fr = fr_at_fa(probs, targets, params['fa_per_hour'], params['audio_seconds'])
 
-    cer, wer = asr_metrics(predict_strings, target_strings)
-    return loss.item(), cer, wer
+    return loss.item(), auc, fr
 
 
-def process_epoch(model, optimizer, criterion, loader, spectrogramer, alphabet, params, train=True):
+def process_epoch(model, optimizer, criterion, loader, spectrogramer, params, train=True):
     model.train() if train else model.eval()
-    running_loss, running_cer, running_wer = 0.0, 0.0, 0.0
+    running_loss, running_auc, running_fr = 0.0, 0.0, 0.0
 
-    win_length = spectrogramer.transforms[0].win_length
-    hop_length = spectrogramer.transforms[0].hop_length
-
-    for batch in loader:
+    for inputs, targets in loader:
         # convert waveforms to spectrograms
         with torch.no_grad():
-            batch[0] = spectrogramer(batch[0].to(params['device']))
+            inputs = spectrogramer(inputs.to(params['device']))
+            inputs = inputs.transpose(1, 2)
 
         # pass targets to device
-        batch[1] = batch[1].to(params['device'])
+        targets = targets.to(params['device'])
 
-        # convert audio lengths to network output lengths
-        batch[2] = ((batch[2] - win_length) // hop_length + 3) // 2
-
-        loss, cer, wer = process_batch(model, optimizer, criterion, alphabet, batch, train)
-        running_loss += loss * batch[0].shape[0]
-        running_cer += cer * batch[0].shape[0]
-        running_wer += wer * batch[0].shape[0]
+        loss, auc, fr = process_batch(model, optimizer, criterion, inputs, targets, params, train)
+        running_loss += loss * inputs.shape[0]
+        running_auc += auc * inputs.shape[0]
+        running_fr += fr * inputs.shape[0]
 
     running_loss /= len(loader.dataset)
-    running_cer /= len(loader.dataset)
-    running_wer /= len(loader.dataset)
+    running_auc /= len(loader.dataset)
+    running_fr /= len(loader.dataset)
 
-    return running_loss, running_cer, running_wer
+    return running_loss, running_auc, running_fr
 
 
-def train(model, optimizer, train_loader, valid_loader, alphabet, params):
-    criterion = nn.CrossEntropyLoss()
+def train(model, optimizer, train_loader, valid_loader, params):
+    weights = calculate_weigths(train_loader.dataset.labels, params['keywords'])
+    criterion = nn.CrossEntropyLoss(torch.tensor(weights))
 
     spectrogramer = torchvision.transforms.Compose([
         torchaudio.transforms.MelSpectrogram(
@@ -72,14 +66,15 @@ def train(model, optimizer, train_loader, valid_loader, alphabet, params):
     ])
 
     for epoch in range(params['start_epoch'], params['num_epochs'] + params['start_epoch']):
-        train_loss, train_cer, train_wer = process_epoch(model, optimizer, criterion, train_loader,
-                                                         spectrogramer, alphabet, params, train=True)
+        train_loss, train_auc, train_fr = process_epoch(model, optimizer, criterion, train_loader,
+                                                        spectrogramer, params, train=True)
 
-        valid_loss, valid_cer, valid_wer = process_epoch(model, optimizer, criterion, valid_loader,
-                                                         spectrogramer, alphabet, params, train=False)
+        valid_loss, valid_auc, valid_fr = process_epoch(model, optimizer, criterion, valid_loader,
+                                                        spectrogramer, params, train=False)
 
         if params['use_wandb']:
-            wand.log()
+            wand.log({'train loss': train_loss, 'train FNR/FPR-AUC': train_auc, 'train FR% @ FA/H = 1': train_fr,
+                      'valid loss': valid_loss, 'valid FNR/FPR-AUC': valid_auc, 'valid FR% @ FA/H = 1': valid_fr})
 
         torch.save({
             'model_state_dict': model.state_dict(),

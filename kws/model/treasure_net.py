@@ -35,7 +35,7 @@ class TreasureNet(nn.Module):
 
 
 def treasure_net(params):
-    return TreasureNet(params['num_keywords'], params['time_steps'], params['num_mels'],
+    return TreasureNet(len(params['keywords']), params['time_steps'], params['num_mels'],
                        params['conv_channels'], params['kernel_size'], params['stride'],
                        params['gru_hidden'], params['gru_layers'], params['num_heads'],
                        params['dropout'])

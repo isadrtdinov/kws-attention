@@ -29,3 +29,11 @@ def split_data(data, valid_ratio=0.2):
 
     return train_data, valid_data
 
+
+def calculate_weights(data, keywords):
+    freqs = data.category.value_counts(normalize=True)
+    weights = np.array([freqs[keyword] for keyword in keywords])
+    weights = np.concatenate([[1.0 - weights.sum()], weights])
+    weights = 1 / weights
+    return weights
+

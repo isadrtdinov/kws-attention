@@ -22,6 +22,7 @@ def set_params():
 
         # Data processing
         'valid_ratio': 0.2,
+        'fa_per_hour': 1.0,
         'audio_seconds': 1.0
         'sample_rate': 16000,
         'time_steps': 81,

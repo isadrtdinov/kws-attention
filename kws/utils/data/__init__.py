@@ -1,3 +1,3 @@
-from .lj_speech_dataset import LJSpeechDataset
-from .data import load_data, split_data
+from .speech_commands import SpeechCommandsDataset
+from .data import load_data, split_data, calculate_weights
 

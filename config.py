@@ -8,24 +8,25 @@ def set_params():
         'num_workers': 8,
 
         # Wandb params
+        'use_wandb': False,
         'wandb_project': 'kws-attention',
-        'num_examples': 5,
 
         # Data location
         'data_root': 'speech_commands/',
 
         # Checkpoints
         'checkpoint_dir': 'checkpoints/',
-        'checkpoint_template': 'checkpoints/quartznet{}.pt',
-        'model_checkpoint': 'checkpoints/quartznet30.pt',
-        'load_model': True,
+        'checkpoint_template': 'checkpoints/treasure_net{}.pt',
+        'model_checkpoint': 'checkpoints/treasure_net10.pt',
+        'load_model': False,
 
         # Data processing
         'valid_ratio': 0.2,
+        'audio_seconds': 1.0
         'sample_rate': 16000,
-        'num_mels': 64,
-        'max_audio_length': 216000,
-        'max_target_length': 200,
+        'time_steps': 81,
+        'num_mels': 40,
+        'keywords': ['marvin', 'sheila'],
 
         # Augmentation params:
         'pitch_shift': 2.0, 'noise_scale': 0.005,
@@ -33,8 +34,8 @@ def set_params():
 
         # Optimizer params:
         'lr': 1e-3, 'weight_decay': 1e-3,
-        'batch_size': 208, 'num_epochs': 30,
-        'start_epoch': 31,
+        'batch_size': 512, 'num_epochs': 10,
+        'start_epoch': 1,
     }
 
     return params

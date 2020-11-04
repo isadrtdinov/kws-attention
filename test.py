@@ -60,7 +60,7 @@ def test():
 
     seconds_steps = np.linspace(0, waveform.shape[1] / params['sample_rate'], num_predicts)
     for i, keyword in enumerate(params['keywords']):
-        plt.plot(seconds_steps, gaussian_filter1d(keyword_probs[:, i], sigma=3), label=keyword)
+        plt.plot(seconds_steps, keyword_probs[:, i], label=keyword)
 
     plt.grid()
     plt.legend(title='keyword')

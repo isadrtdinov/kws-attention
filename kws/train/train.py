@@ -13,14 +13,14 @@ def process_batch(model, optimizer, criterion, inputs, targets, params, train=Tr
 
     with torch.set_grad_enabled(train):
         logits = model(inputs)
-        loss = criterion(loss, targets)
+        loss = criterion(logits, targets)
 
         if train:
             loss.backward()
             optimizer.step()
 
-    probs = 1.0 - nn.functional.softmax(logits, dim=-1).numpy()
-    targets = (targets != 0).long().numpy()
+    probs = 1.0 - nn.functional.softmax(logits.detach(), dim=-1).cpu().numpy()
+    targets = (targets != 0).long().cpu().numpy()
 
     auc = fnr_fpr_auc(probs, targets)
     fr = fr_at_fa(probs, targets, params['fa_per_hour'], params['audio_seconds'])
@@ -54,8 +54,8 @@ def process_epoch(model, optimizer, criterion, loader, spectrogramer, params, tr
 
 
 def train(model, optimizer, train_loader, valid_loader, params):
-    weights = calculate_weigths(train_loader.dataset.labels, params['keywords'])
-    criterion = nn.CrossEntropyLoss(torch.tensor(weights))
+    weights = calculate_weights(train_loader.dataset.labels, params['keywords'])
+    criterion = nn.CrossEntropyLoss(torch.tensor(weights, dtype=torch.float).to(params['device']))
 
     spectrogramer = torchvision.transforms.Compose([
         torchaudio.transforms.MelSpectrogram(
@@ -73,8 +73,8 @@ def train(model, optimizer, train_loader, valid_loader, params):
                                                         spectrogramer, params, train=False)
 
         if params['use_wandb']:
-            wand.log({'train loss': train_loss, 'train FNR/FPR-AUC': train_auc, 'train FR% @ FA/H = 1': train_fr,
-                      'valid loss': valid_loss, 'valid FNR/FPR-AUC': valid_auc, 'valid FR% @ FA/H = 1': valid_fr})
+            wandb.log({'train loss': train_loss, 'train FNR/FPR-AUC': train_auc, 'train FR% @ FA/H = 1': train_fr,
+                       'valid loss': valid_loss, 'valid FNR/FPR-AUC': valid_auc, 'valid FR% @ FA/H = 1': valid_fr})
 
         torch.save({
             'model_state_dict': model.state_dict(),

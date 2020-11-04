@@ -27,7 +27,7 @@ class CRNN(nn.Module):
         outputs = outputs.permute(0, 2, 3, 1)
         # outputs: (batch_size, time_frames, num_features, conv_channels)
 
-        outputs = outputs.view(outputs.shape[0], outputs.shape[1], -1)
+        outputs = outputs.reshape(outputs.shape[0], outputs.shape[1], -1)
         outputs = self.dropout(outputs)
         # outputs: (batch_size, time_frames, num_features * conv_channels)
 

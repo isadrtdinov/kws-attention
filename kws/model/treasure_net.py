@@ -25,7 +25,7 @@ class TreasureNet(nn.Module):
         outputs = self.attention(query=outputs, key=outputs, value=outputs)
         # outputs: (batch_size, time_frames, gru_hidden)
 
-        outputs = outputs.view(outputs.shape[0], -1)
+        outputs = outputs.reshape(outputs.shape[0], -1)
         # outputs: (batch_size, time_frames * gru_hidden)
 
         outputs = self.classifier(outputs)

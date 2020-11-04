@@ -11,10 +11,14 @@ def fnr_fpr_curve(probs, targets):
     targets = targets[order]
 
     pos_examples = (targets == 1).sum()
+    neg_examples = (targets == 0).sum()
+
+    if pos_examples == 0 or neg_examples == 0:
+        return np.array([0.0, 1.0]), np.array([1.0, 0.0])
+
     fnr = np.cumsum(targets == 1) / pos_examples
     fnr = np.concatenate([[0.0], fnr])
 
-    neg_examples = (targets == 0).sum()
     fpr = 1.0 - np.cumsum(targets == 0) / neg_examples
     fpr = np.concatenate([[1.0], fpr])
 
@@ -32,7 +36,7 @@ def fnr_at_fpr(probs, targets, max_fpr=0.1):
     # calculates FNR for specific FPR
 
     fnr, fpr = fnr_fpr_curve(probs, targets)
-    index = np.sum(fpr > max_fpr) - 1
+    index = np.sum(fpr > max_fpr)
     return fnr[index]
 
 

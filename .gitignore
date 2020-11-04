@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Project
+checkpoints/
+speech_commands/
+wandb/
+

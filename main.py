@@ -1,9 +1,12 @@
+import os
+import wandb
 import torch
 import torchvision
 from config import set_params
-from asr.utils import set_random_seed, transforms
-from asr.utils.data import SpeechCommandsDataset, load_data, split_data
-from asr.model import treasure_net
+from kws.utils import set_random_seed, transforms
+from kws.utils.data import SpeechCommandsDataset, load_data, split_data
+from kws.model import treasure_net
+from kws.train import train
 
 
 def main():

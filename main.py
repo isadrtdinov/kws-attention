@@ -46,7 +46,7 @@ def main():
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=params['batch_size'],
                                                num_workers=params['num_workers'], shuffle=True)
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=params['batch_size'],
-                                               num_workers=params['num_workers'])
+                                               num_workers=params['num_workers'], shuffle=True)
 
     if params['verbose']:
         print('Data loaders prepared')

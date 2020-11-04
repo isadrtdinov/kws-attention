@@ -4,6 +4,7 @@ import torchvision
 import librosa
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.ndimage import gaussian_filter1d
 from config import set_params
 from kws.model import treasure_net
 from kws.utils.transforms import SpectogramNormalize
@@ -42,7 +43,6 @@ def test():
 
     # calculate keyword probs
     spec = spectrogramer(waveform).transpose(1, 2)
-    print(spec.shape)
     num_predicts = spec.shape[1] - params['time_steps']
     keyword_probs = np.zeros((num_predicts, len(params['keywords'])))
     hidden = None
@@ -55,12 +55,12 @@ def test():
         keyword_probs[i] = probs[:, 1:]
 
     # plot results
-    plt.figure(figsize=(15, 5))
+    plt.figure(figsize=(12, 5))
     plt.rcParams.update({'font.size': 14})
 
     seconds_steps = np.linspace(0, waveform.shape[1] / params['sample_rate'], num_predicts)
     for i, keyword in enumerate(params['keywords']):
-        plt.plot(seconds_steps, keyword_probs[:, i], label=keyword)
+        plt.plot(seconds_steps, gaussian_filter1d(keyword_probs[:, i], sigma=1), label=keyword)
 
     plt.grid()
     plt.legend(title='keyword')

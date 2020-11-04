@@ -74,8 +74,8 @@ def train(model, optimizer, train_loader, valid_loader, params):
                                                         spectrogramer, params, train=False)
 
         if params['use_wandb']:
-            wandb.log({'train loss': train_loss, 'train FNR-FPR-AUC': train_auc, 'train FR% @ FA = 1': train_fr,
-                       'valid loss': valid_loss, 'valid FNR-FPR-AUC': valid_auc, 'valid FR% @ FA = 1': valid_fr})
+            wandb.log({'train loss': train_loss, 'train FNR-FPR-AUC': train_auc, 'train FR% @ FA = 1': 100 * train_fr,
+                       'valid loss': valid_loss, 'valid FNR-FPR-AUC': valid_auc, 'valid FR% @ FA = 1': 100 * valid_fr})
 
         torch.save({
             'model_state_dict': model.state_dict(),

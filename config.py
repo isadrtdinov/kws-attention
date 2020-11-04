@@ -39,10 +39,10 @@ def set_params():
         'start_epoch': 1,
 
         # TreasureNet params:
-        'conv_channels': 16, 'kernel_size': (20, 5),
-        'stride': (8, 2), 'gru_hidden': 256,
+        'conv_channels': 32, 'kernel_size': (8, 4),
+        'stride': (2, 2), 'gru_hidden': 256,
         'gru_layers': 2, 'num_heads': 8,
-        'dropout': 0.2,
+        'dropout': 0.3,
     }
 
     return params

@@ -19,8 +19,8 @@ def set_params():
         # Checkpoints
         'checkpoint_dir': 'checkpoints/',
         'checkpoint_template': 'checkpoints/treasure_net{}.pt',
-        'model_checkpoint': 'checkpoints/treasure_net10.pt',
-        'load_model': False,
+        'model_checkpoint': 'checkpoints/treasure_net16.pt',
+        'load_model': True,
 
         # Data processing
         'valid_ratio': 0.2,

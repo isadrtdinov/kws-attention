@@ -42,5 +42,5 @@ class CRNN(nn.Module):
         # outputs: (batch_size, time_frames, gru_hidden)
         # hidden: (batch_size, gru_layers, gru_hidden)
 
-        return outputs
+        return outputs, hidden
 

@@ -24,6 +24,8 @@ def test():
 
     # prepare test audio
     waveform, sample_rate = torchaudio.load(params['example_audio'])
+    waveform = waveform[:1]
+
     if sample_rate != params['sample_rate']:
         waveform = waveform.squeeze(0).numpy()
         waveform = librosa.core.resample(waveform, sample_rate, params['sample_rate'])
@@ -40,6 +42,7 @@ def test():
 
     # calculate keyword probs
     spec = spectrogramer(waveform).transpose(1, 2)
+    print(spec.shape)
     num_predicts = spec.shape[1] - params['time_steps']
     keyword_probs = np.zeros((num_predicts, len(params['keywords'])))
     hidden = None
@@ -59,8 +62,10 @@ def test():
     for i, keyword in enumerate(params['keywords']):
         plt.plot(seconds_steps, keyword_probs[:, i], label=keyword)
 
-    plt.legend()
     plt.grid()
+    plt.legend(title='keyword')
+    plt.xlabel('time (s)')
+    plt.ylabel('probability')
     plt.savefig(params['example_fig'])
 
 

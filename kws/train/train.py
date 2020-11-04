@@ -22,7 +22,6 @@ def process_batch(model, optimizer, criterion, inputs, targets, params, train=Tr
     probs = nn.functional.softmax(logits.detach(), dim=-1).cpu().numpy()
     probs = 1.0 - probs[:, 0]
     targets = (targets != 0).long().cpu().numpy()
-    print(probs, targets)
 
     auc = fnr_fpr_auc(probs, targets)
     fr = fr_at_fa(probs, targets, params['fa_per_hour'], params['audio_seconds'])

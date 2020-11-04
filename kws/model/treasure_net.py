@@ -15,11 +15,12 @@ class TreasureNet(nn.Module):
         self.attention = MultiHeadAttention(gru_hidden, num_heads, dropout)
         self.classifier = nn.Linear(self.encoder.time_frames * gru_hidden, num_keywords + 1)
 
-    def forward(self, inputs):
-        # inouts: (batch_size, time_steps, num_mels)
+    def forward(self, inputs, hidden=None):
+        # inputs: (batch_size, time_steps, num_mels)
 
-        outputs = self.encoder(inputs.unsqueeze(1))
+        outputs, hidden = self.encoder(inputs.unsqueeze(1), hidden)
         # outputs: (batch_size, time_frames, gru_hidden)
+        # hidden: (batch_size, gru_layers, gru_hidden)
 
         outputs = self.layer_norm(outputs)
         outputs = self.attention(query=outputs, key=outputs, value=outputs)
@@ -31,7 +32,7 @@ class TreasureNet(nn.Module):
         outputs = self.classifier(outputs)
         # outputs: (batch_size, num_keywords + 1)
 
-        return outputs
+        return outputs, hidden
 
 
 def treasure_net(params):

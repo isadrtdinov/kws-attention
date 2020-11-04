@@ -23,7 +23,7 @@ class CRNN(nn.Module):
         self.gru = nn.GRU(input_size=self.num_features * conv_channels, hidden_size=gru_hidden,
                           num_layers=gru_layers, dropout=dropout, batch_first=True)
 
-    def forward(self, inputs):
+    def forward(self, inputs, hidden=None):
         # inputs: (batch_size, 1, time_steps, num_mels)
 
         outputs = nn.functional.relu(self.conv1(inputs))
@@ -38,8 +38,9 @@ class CRNN(nn.Module):
         outputs = self.dropout(outputs)
         # outputs: (batch_size, time_frames, num_features * conv_channels)
 
-        outputs, _ = self.gru(outputs)
+        outputs, hidden = self.gru(outputs)
         # outputs: (batch_size, time_frames, gru_hidden)
+        # hidden: (batch_size, gru_layers, gru_hidden)
 
         return outputs
 

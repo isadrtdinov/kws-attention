@@ -12,7 +12,7 @@ def process_batch(model, optimizer, criterion, inputs, targets, params, train=Tr
     optimizer.zero_grad()
 
     with torch.set_grad_enabled(train):
-        logits = model(inputs)
+        logits, _ = model(inputs)
         loss = criterion(logits, targets)
 
         if train:

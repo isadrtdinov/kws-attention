@@ -13,6 +13,8 @@ def set_params():
 
         # Data location
         'data_root': 'speech_commands/',
+        'example_audio': 'example.wav',
+        'example_fig': 'example_probs.jpg',
 
         # Checkpoints
         'checkpoint_dir': 'checkpoints/',

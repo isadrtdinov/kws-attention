@@ -35,7 +35,7 @@ def set_params():
 
         # Optimizer params:
         'lr': 1e-3, 'weight_decay': 1e-3,
-        'batch_size': 512, 'num_epochs': 10,
+        'batch_size': 2048, 'num_epochs': 10,
         'start_epoch': 1,
 
         # TreasureNet params:

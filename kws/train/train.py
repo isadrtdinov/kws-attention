@@ -19,8 +19,10 @@ def process_batch(model, optimizer, criterion, inputs, targets, params, train=Tr
             loss.backward()
             optimizer.step()
 
-    probs = 1.0 - nn.functional.softmax(logits.detach(), dim=-1).cpu().numpy()
+    probs = nn.functional.softmax(logits.detach(), dim=-1).cpu().numpy()
+    probs = 1.0 - probs[:, 0]
     targets = (targets != 0).long().cpu().numpy()
+    print(probs, targets)
 
     auc = fnr_fpr_auc(probs, targets)
     fr = fr_at_fa(probs, targets, params['fa_per_hour'], params['audio_seconds'])
@@ -73,8 +75,8 @@ def train(model, optimizer, train_loader, valid_loader, params):
                                                         spectrogramer, params, train=False)
 
         if params['use_wandb']:
-            wandb.log({'train loss': train_loss, 'train FNR/FPR-AUC': train_auc, 'train FR% @ FA/H = 1': train_fr,
-                       'valid loss': valid_loss, 'valid FNR/FPR-AUC': valid_auc, 'valid FR% @ FA/H = 1': valid_fr})
+            wandb.log({'train loss': train_loss, 'train FNR-FPR-AUC': train_auc, 'train FR% @ FA = 1': train_fr,
+                       'valid loss': valid_loss, 'valid FNR-FPR-AUC': valid_auc, 'valid FR% @ FA = 1': valid_fr})
 
         torch.save({
             'model_state_dict': model.state_dict(),

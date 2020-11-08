@@ -35,8 +35,8 @@ Download model checkpoint:
 
 Start training process:
 
-`scripts/train_model.sh`
+`./scripts/train_model.sh`
 
 Model inference, this one is configured to process `example.wav` file. Output probabilities are plotted in `example_probs.jpg` file:
 
-`scripts/test_model.sh`
+`./scripts/test_model.sh`

@@ -19,7 +19,7 @@ def set_params():
         # Checkpoints
         'checkpoint_dir': 'checkpoints/',
         'checkpoint_template': 'checkpoints/treasure_net{}.pt',
-        'model_checkpoint': 'checkpoints/treasure_net20.pt',
+        'model_checkpoint': 'treasure_net.pt',
         'load_model': True,
 
         # Data processing

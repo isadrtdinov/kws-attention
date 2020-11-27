@@ -49,7 +49,7 @@ def test():
 
     for i in range(num_predicts):
         with torch.no_grad():
-            logits, hidden = model(spec[:, i:i + params['time_steps']], hidden)
+            logits, _ = model(spec[:, i:i + params['time_steps']])
             probs = torch.nn.functional.softmax(logits.detach(), dim=-1).cpu().numpy()
 
         keyword_probs[i] = probs[:, 1:]

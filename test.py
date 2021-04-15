@@ -8,6 +8,7 @@ from scipy.ndimage import gaussian_filter1d
 from config import set_params
 from kws.model import treasure_net
 from kws.utils.transforms import SpectogramNormalize
+from kws.utils.utils import exp_moving_average
 
 
 def test():
@@ -60,7 +61,8 @@ def test():
 
     seconds_steps = np.linspace(0, waveform.shape[1] / params['sample_rate'], num_predicts)
     for i, keyword in enumerate(params['keywords']):
-        plt.plot(seconds_steps, keyword_probs[:, i], label=keyword)
+        ema_probs = exp_moving_average(keyword_probs[:, i], alpha=params['ema_alpha'])
+        plt.plot(seconds_steps, ema_probs, label=keyword)
 
     plt.grid()
     plt.legend(title='keyword')

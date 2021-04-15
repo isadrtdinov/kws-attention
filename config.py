@@ -30,6 +30,7 @@ def set_params():
         'time_steps': 81,
         'num_mels': 64,
         'keywords': ['marvin', 'sheila'],
+        'ema_alpha': 0.05,
 
         # Augmentation params:
         'pitch_shift': 2.0, 'noise_scale': 0.005,

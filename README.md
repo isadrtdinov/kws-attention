@@ -1,5 +1,4 @@
-# kws-attention
-Attention-based model for keywords spotting
+# Attention-based Model for Keywords Spotting
 
 Paper: <https://arxiv.org/abs/1803.10916>
 
@@ -35,8 +34,14 @@ Download model checkpoint:
 
 Start training process:
 
-`scripts/train_model.sh`
+`./scripts/train_model.sh`
 
 Model inference, this one is configured to process `example.wav` file. Output probabilities are plotted in `example_probs.jpg` file:
 
-`scripts/test_model.sh`
+`./scripts/test_model.sh`
+
+## Results
+
+Here is an example of model probs for `example.wav`. This audio contains the following spoken text: "Hello, dear Sheila! This message was recorded to you by Marvin himself".
+
+<img src="/example_probs.jpg" alt="drawing" width="1000"/>

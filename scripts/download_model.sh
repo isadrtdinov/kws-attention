@@ -1,5 +1,5 @@
 #!/bin/bash
 
-wget https://getfile.dokpub.com/yandex/get/https://yadi.sk/d/c3vd_5o3DC3Oug
-mv c3vd_5o3DC3Oug treasure_net.pt
+wget https://getfile.dokpub.com/yandex/get/https://yadi.sk/d/Uffwg1HFcLB7PQ
+mv Uffwg1HFcLB7PQ treasure_net.pt
 
